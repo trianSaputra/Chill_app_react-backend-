@@ -21,7 +21,7 @@ const getGenreById = asyncHandler(async (req, res) => {
 
 const createGenre = asyncHandler(async (req, res) => {
   const { genre_name } = req.body;
-  if (!genre_name) {
+  if (!genre_name || genre_name.trim() === "") {
     throw new ApiError("Nama genre wajib diisi", 400);
   }
 
@@ -29,7 +29,7 @@ const createGenre = asyncHandler(async (req, res) => {
   return successResponse(
     res,
     "Berhasil membuat genre baru",
-    { genreId: genreId },
+    { genre_id: genreId },
     201,
   );
 });
@@ -38,8 +38,12 @@ const updateGenre = asyncHandler(async (req, res) => {
   const { id: genreId } = req.params;
   const { genre_name } = req.body;
 
-  if (!genre_name) {
-    throw new ApiError("Nama genre wajib diisi", 400);
+  if (genre_name === undefined) {
+    return successResponse(res, "Tidak ada perubahan");
+  }
+
+  if (genre_name !== undefined && genre_name.trim() === "") {
+    throw new ApiError("Nama genre tidak boleh kosong", 400);
   }
 
   const affectedRows = await genreService.updateGenre(genreId, genre_name);

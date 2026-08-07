@@ -1,3 +1,4 @@
+const buildUpdateQuery = require("../helpers/buildUpdateQuery");
 const db = require("../config/db");
 
 const getAllUsers = async () => {
@@ -28,23 +29,7 @@ const createUser = async (userData) => {
 const updateUser = async (userId, userData) => {
   const { name, email, avatar } = userData;
 
-  const fields = [];
-  const values = [];
-
-  if (name !== undefined) {
-    fields.push("name = ?");
-    values.push(name);
-  }
-
-  if (email !== undefined) {
-    fields.push("email = ?");
-    values.push(email);
-  }
-
-  if (avatar !== undefined) {
-    fields.push("avatar = ?");
-    values.push(avatar);
-  }
+  const { fields, values } = buildUpdateQuery(userData);
 
   fields.push("updated_at = CURRENT_TIMESTAMP");
 

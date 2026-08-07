@@ -23,8 +23,16 @@ const getUserById = asyncHandler(async (req, res) => {
 const createUser = asyncHandler(async (req, res) => {
   const { name, email, password, avatar } = req.body;
 
-  if (!name || !email || !password) {
-    throw new ApiError("Name, email, dan password wajib diisi", 400);
+  if (!name || name.trim() === "") {
+    throw new ApiError("Name wajib diisi", 400);
+  }
+
+  if (!email || email.trim() === "") {
+    throw new ApiError("Email wajib diisi", 400);
+  }
+
+  if (!password || password.trim() === "") {
+    throw new ApiError("Password wajib diisi", 400);
   }
 
   const userId = await userService.createUser({
