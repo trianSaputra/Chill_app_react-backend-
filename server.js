@@ -8,6 +8,13 @@ const db = require("./src/config/db");
 const app = express();
 
 const userRoutes = require("./src/routes/user.routes");
+const genreRoutes = require("./src/routes/genre.routes");
+const packagesRoutes = require("./src/routes/packages.routes");
+const seriesRoutes = require("./src/routes/series.routes");
+const episodesRoutes = require("./src/routes/episodes.routes");
+const daftarSayaRoutes = require("./src/routes/daftarSaya.routes");
+const orderRoutes = require("./src/routes/order.routes");
+const pembayaranRoutes = require("./src/routes/pembayaran.routes");
 
 app.use(cors());
 app.use(express.json());
@@ -20,6 +27,13 @@ app.get("/", (req, res) => {
 });
 
 app.use("/users", userRoutes);
+app.use("/genres", genreRoutes);
+app.use("/packages", packagesRoutes);
+app.use("/series", seriesRoutes);
+app.use("/episodes", episodesRoutes);
+app.use("/daftar-saya", daftarSayaRoutes);
+app.use("/orders", orderRoutes);
+app.use("/pembayaran", pembayaranRoutes);
 
 app.use(errorHandler);
 

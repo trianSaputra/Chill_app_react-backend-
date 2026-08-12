@@ -1,4 +1,4 @@
-const buildUpdateQuery = require("../helpers/buildUpdateQuery");
+const buildUpdateFields = require("../helpers/buildUpdateFields");
 const db = require("../config/db");
 
 const getAllUsers = async () => {
@@ -27,22 +27,11 @@ const createUser = async (userData) => {
 };
 
 const updateUser = async (userId, userData) => {
-  const { name, email, avatar } = userData;
-
-  const { fields, values } = buildUpdateQuery(userData);
-
-  fields.push("updated_at = CURRENT_TIMESTAMP");
-
-  const query = `
-    UPDATE users
-    SET ${fields.join(", ")}
-    WHERE user_id = ?
-  `;
-
-  values.push(userId);
-
-  const [result] = await db.query(query, values);
-
+  const { fields, values } = buildUpdateFields(userData);
+  const [result] = await db.query(
+    `UPDATE users SET ${fields} WHERE user_id = ?`,
+    [...values, userId],
+  );
   return result.affectedRows;
 };
 
