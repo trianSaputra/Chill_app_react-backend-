@@ -67,8 +67,11 @@ const createPembayaran = asyncHandler(async (req, res) => {
     );
   }
 
-  if (result.error === "PAYMENT_ALREADY_EXISTS") {
-    throw new ApiError("Order sudah memiliki pembayaran", 400);
+  if (result.error === "PAYMENT_ALREADY_PENDING") {
+    throw new ApiError(
+      "Masih ada pembayaran yang sedang menunggu pembayaran",
+      400,
+    );
   }
 
   return successResponse(
@@ -81,8 +84,50 @@ const createPembayaran = asyncHandler(async (req, res) => {
   );
 });
 
+const successPembayaran = asyncHandler(async (req, res) => {
+  const { id: pembayaranId } = req.params;
+
+  const result = await pembayaranService.successPembayaran(pembayaranId);
+
+  if (!result) {
+    throw new ApiError("Pembayaran tidak ditemukan", 404);
+  }
+
+  if (result.error === "PAYMENT_NOT_PENDING") {
+    throw new ApiError("Pembayaran sudah diproses dan tidak dapat diubah", 400);
+  }
+
+  if (result.error === "ORDER_NOT_PENDING") {
+    throw new ApiError("Order tidak dalam status PENDING", 400);
+  }
+
+  return successResponse(res, "Pembayaran berhasil dikonfirmasi", result);
+});
+
+const failedPembayaran = asyncHandler(async (req, res) => {
+  const { id: pembayaranId } = req.params;
+
+  const result = await pembayaranService.failedPembayaran(pembayaranId);
+
+  if (!result) {
+    throw new ApiError("Pembayaran tidak ditemukan", 404);
+  }
+
+  if (result.error === "PAYMENT_NOT_PENDING") {
+    throw new ApiError("Pembayaran sudah diproses dan tidak dapat diubah", 400);
+  }
+
+  if (result.error === "ORDER_NOT_PENDING") {
+    throw new ApiError("Order tidak dalam status PENDING", 400);
+  }
+
+  return successResponse(res, "Pembayaran gagal", result);
+});
+
 module.exports = {
   getAllPembayaran,
   getPembayaranById,
   createPembayaran,
+  successPembayaran,
+  failedPembayaran,
 };

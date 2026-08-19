@@ -1,4 +1,4 @@
-const buildUpdateQuery = (data) => {
+const buildUpdateFields = (data) => {
   const fields = [];
   const values = [];
 
@@ -11,4 +11,4 @@ const buildUpdateQuery = (data) => {
   return { fields, values };
 };
 
-module.exports = buildUpdateQuery;
+module.exports = buildUpdateFields;
