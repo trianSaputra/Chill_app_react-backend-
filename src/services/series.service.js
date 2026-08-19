@@ -113,14 +113,44 @@ const updateSeries = async (seriesId, seriesData) => {
 };
 
 const deleteSeries = async (seriesId) => {
-  const [result] = await db.query(
-    `
-    DELETE FROM series
-    WHERE series_id = ?
-    `,
-    [seriesId],
-  );
-  return result.affectedRows;
+  const connection = await db.getConnection();
+
+  try {
+    await connection.beginTransaction();
+
+    await connection.query(
+      `
+      DELETE FROM daftar_saya
+      WHERE series_id = ?
+      `,
+      [seriesId],
+    );
+
+    await connection.query(
+      `
+      DELETE FROM episodes
+      WHERE series_id = ?
+      `,
+      [seriesId],
+    );
+
+    const [result] = await connection.query(
+      `
+      DELETE FROM series
+      WHERE series_id = ?
+      `,
+      [seriesId],
+    );
+
+    await connection.commit();
+
+    return result.affectedRows;
+  } catch (error) {
+    await connection.rollback();
+    throw error;
+  } finally {
+    connection.release();
+  }
 };
 
 module.exports = {
