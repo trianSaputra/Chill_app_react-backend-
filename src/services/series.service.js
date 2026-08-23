@@ -1,8 +1,8 @@
 const db = require("../config/db");
 const buildUpdateFields = require("../helpers/buildUpdateFields");
 
-const getAllSeries = async () => {
-  const [rows] = await db.query(`
+const getAllSeries = async ({ genre, sortBy, search } = {}) => {
+  let query = `
     SELECT
       s.series_id,
       s.genre_id,
@@ -22,8 +22,46 @@ const getAllSeries = async () => {
       ON s.genre_id = g.genre_id
     LEFT JOIN episodes e
       ON s.series_id = e.series_id
+  `;
+
+  const conditions = [];
+  const values = [];
+
+  if (genre !== undefined) {
+    conditions.push("s.genre_id = ?");
+    values.push(genre);
+  }
+
+  if (search !== undefined && search.trim() !== "") {
+    conditions.push("s.title LIKE ?");
+    values.push(`%${search}%`);
+  }
+
+  if (conditions.length > 0) {
+    query += ` WHERE ${conditions.join(" AND ")}`;
+  }
+
+  query += `
     GROUP BY s.series_id
-    `);
+  `;
+
+  const allowedSortFields = {
+    rating: "s.rating",
+    release_date: "s.release_date",
+    title: "s.title",
+    created_at: "s.created_at",
+  };
+
+  if (sortBy !== undefined) {
+    const sortField = allowedSortFields[sortBy];
+
+    if (sortField) {
+      query += ` ORDER BY ${sortField} DESC`;
+    }
+  }
+
+  const [rows] = await db.query(query, values);
+
   return rows;
 };
 

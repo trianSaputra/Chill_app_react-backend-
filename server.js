@@ -15,6 +15,8 @@ const episodesRoutes = require("./src/routes/episodes.routes");
 const daftarSayaRoutes = require("./src/routes/daftarSaya.routes");
 const orderRoutes = require("./src/routes/order.routes");
 const pembayaranRoutes = require("./src/routes/pembayaran.routes");
+const authRoutes = require("./src/routes/auth.routes");
+const uploadRoutes = require("./src/routes/upload.routes");
 
 app.use(cors());
 app.use(express.json());
@@ -34,6 +36,8 @@ app.use("/episodes", episodesRoutes);
 app.use("/daftar-saya", daftarSayaRoutes);
 app.use("/orders", orderRoutes);
 app.use("/pembayaran", pembayaranRoutes);
+app.use("/", authRoutes);
+app.use("/upload", uploadRoutes);
 
 app.use(errorHandler);
 

@@ -4,32 +4,16 @@ const asyncHandler = require("../middlewares/asyncHandler");
 const ApiError = require("../utils/ApiError");
 
 const getAllDaftarSaya = asyncHandler(async (req, res) => {
-  const userId = Number(req.query.user_id);
+  const userId = req.user.user_id;
 
-  if (!Number.isInteger(userId) || userId <= 0) {
-    throw new ApiError("User ID harus berupa angka dan lebih dari 0", 400);
-  }
+  const data = await daftarSayaService.getAllDaftarSaya(userId);
 
-  const daftarSaya = await daftarSayaService.getAllDaftarSaya(userId);
-
-  return successResponse(
-    res,
-    "Berhasil mengambil data Daftar Saya",
-    daftarSaya,
-  );
+  return successResponse(res, "Berhasil mengambil data daftar saya", data);
 });
 
 const createDaftarSaya = asyncHandler(async (req, res) => {
-  const { user_id, series_id } = req.body;
-
-  if (
-    user_id === undefined ||
-    user_id === null ||
-    typeof user_id !== "number" ||
-    user_id <= 0
-  ) {
-    throw new ApiError("User ID harus berupa angka dan lebih dari 0", 400);
-  }
+  const user_id = req.user.user_id;
+  const { series_id } = req.body;
 
   if (
     series_id === undefined ||
@@ -52,11 +36,7 @@ const createDaftarSaya = asyncHandler(async (req, res) => {
 
 const deleteDaftarSaya = asyncHandler(async (req, res) => {
   const { id: daftarId } = req.params;
-  const userId = Number(req.query.user_id);
-
-  if (!Number.isInteger(userId) || userId <= 0) {
-    throw new ApiError("User ID harus berupa angka dan lebih dari 0", 400);
-  }
+  const userId = req.user.user_id;
 
   const affectedRows = await daftarSayaService.deleteDaftarSaya(
     daftarId,

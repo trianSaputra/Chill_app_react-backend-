@@ -5,7 +5,14 @@ const asyncHandler = require("../middlewares/asyncHandler");
 const ApiError = require("../utils/ApiError");
 
 const getAllSeries = asyncHandler(async (req, res) => {
-  const series = await seriesService.getAllSeries();
+  const { genre, sortBy, search } = req.query;
+
+  const series = await seriesService.getAllSeries({
+    genre,
+    sortBy,
+    search,
+  });
+
   return successResponse(res, "Berhasil mengambil data semua series", series);
 });
 
